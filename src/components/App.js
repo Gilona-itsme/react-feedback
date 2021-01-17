@@ -7,30 +7,33 @@ import Statistics from "./Statistics";
 import { FEEDBACK_OPTIONS } from "../data/constansFeedBack";
 
 export default class App extends Component {
-  state = {
-    Good: 0,
-    Neutral: 0,
-    Bad: 0,
-  };
+  state = {};
 
   handlerFeedback = (e) => {
     const { feedback } = e.target.dataset;
-    this.setState((prevState) => ({ [feedback]: prevState[feedback] + 1 }));
+    this.setState((prevState) => {
+      const key = prevState[feedback] || 0;
+      return {
+        [feedback]: key + 1,
+      };
+    });
   };
 
   countTotalFeedback = () => {
-    const { Good, Neutral, Bad } = this.state;
-    return Good + Neutral + Bad;
+    // const { Good, Neutral, Bad } = this.state;
+    // return Good + Neutral + Bad;
+    return Object.values(this.state).reduce((acc, item) => acc + item, 0);
   };
 
   countPositiveFeedbackPercentage = () => {
-    const { Good } = this.state;
+    const { Good = 0 } = this.state;
     const total = this.countTotalFeedback();
     return total ? Math.round((Good / total) * 100) : 0;
   };
 
   render() {
-    const { Good, Neutral, Bad } = this.state;
+    //const { Good, Neutral, Bad } = this.state;
+
     const total = this.countTotalFeedback();
     const positivePercentage = this.countPositiveFeedbackPercentage();
     return (
@@ -43,9 +46,8 @@ export default class App extends Component {
         </Section>
         <Section title="Statistics">
           <Statistics
-            good={Good}
-            neutral={Neutral}
-            bad={Bad}
+            statisticBtns={FEEDBACK_OPTIONS}
+            data={this.state}
             total={total}
             positivePercentage={positivePercentage}
           />
